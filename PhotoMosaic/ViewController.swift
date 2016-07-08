@@ -7,19 +7,10 @@
 //
 
 import UIKit
-import ImageIO
 
 class ViewController: UIViewController {
     
-    private var photoMosaicCollectionView: PMImageCollectionView?
-    
-    override func loadView() {
-        super.loadView()
-        
-        let pmcv = PMImageCollectionView()
-        photoMosaicCollectionView = pmcv
-        view.addSubview(pmcv)
-    }
+    @IBOutlet private var photoMosaicCollectionView: PMImageCollectionView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,12 +18,7 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        photoMosaicCollectionView?.setImage(UIImage(named: "h.jpg"))
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        photoMosaicCollectionView?.frame = view.bounds.insetBy(dx: 10, dy: 10)
+        photoMosaicCollectionView?.setImage(UIImage(named: "v.jpg"))
     }
     
     override func didReceiveMemoryWarning() {

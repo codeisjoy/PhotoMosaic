@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vQW-oT-WeY">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -14,12 +14,56 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xTG-U0-xZC">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hyj-Bi-r9E" customClass="PMImageCollectionView" customModule="PhotoMosaic" customModuleProvider="target">
+                                        <rect key="frame" x="8" y="8" width="584" height="482"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GL3-BV-Uim">
+                                        <rect key="frame" x="8" y="498" width="584" height="30"/>
+                                        <state key="normal" title="Let's do it!"/>
+                                    </button>
+                                </subviews>
+                                <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="xTG-U0-xZC" secondAttribute="trailing" id="Dmh-bM-goJ"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xTG-U0-xZC" secondAttribute="bottom" id="rQI-Ve-2ab"/>
+                            <constraint firstItem="xTG-U0-xZC" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="vrc-wg-yTh"/>
+                            <constraint firstItem="xTG-U0-xZC" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="wy8-od-tF2"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="Gcx-VQ-UIS"/>
+                    <connections>
+                        <outlet property="photoMosaicCollectionView" destination="hyj-Bi-r9E" id="Rq1-rt-O5z"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1137" y="387"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="R2c-ti-qqX">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vQW-oT-WeY" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Yzc-rt-YGf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="YNI-pV-VU3"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ngw-Hr-vKN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="325" y="387"/>
         </scene>

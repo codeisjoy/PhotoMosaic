@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import ImageIO
-import CoreImage
+import TakeHomeTask
 
 struct PMTiledImageInfo {
     
@@ -47,7 +46,7 @@ class PMImageCollectionView: UIView {
         return collectionView.collectionViewLayout as! UICollectionViewFlowLayout
     }
     
-    let imageView = UIImageView()
+    private var server = MosaicTileServer()
     
     // MARK: - Public Methods
     
@@ -65,20 +64,12 @@ class PMImageCollectionView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        collectionView.registerClass(PMImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        
-        addSubview(collectionView)
-        
-        imageView.contentMode = .Top
-        imageView.backgroundColor = UIColor.redColor()
-//        addSubview(imageView)
+        customInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        customInit()
     }
     
     override func layoutSubviews() {
@@ -90,11 +81,17 @@ class PMImageCollectionView: UIView {
                 x: (bounds.width - collectionViewSize.width) / 2,
                 y: CGRectGetMinY(bounds)),
             size: collectionViewSize)
-        
-        imageView.frame = bounds
     }
     
     // MARK: - Private Methods
+    
+    private func customInit() {
+        collectionView.registerClass(PMImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        
+        addSubview(collectionView)
+    }
     
     private func resizeImage(source: UIImage, to size: CGSize) -> UIImage? {
         // Find the right ratio to scale
@@ -134,7 +131,6 @@ class PMImageCollectionView: UIView {
                         y: CGFloat(r) * size.height),
                     size: size)
                 let image = CGImageCreateWithImageInRect(source?.CGImage, rect)
-                print(getAverageColor(ofImage: image))
                 tiles.append(image)
             }
         }
@@ -142,32 +138,39 @@ class PMImageCollectionView: UIView {
         return PMTiledImageInfo(rows, cols, tiles)
     }
     
-    private func getAverageColor(ofImage image: CGImage?) -> UIColor {
+    private func getAverageColor(ofImage image: CGImage?, inRect rect: CGRect) -> UIColor {
         guard let image = image else {
             return UIColor.blackColor().colorWithAlphaComponent(0)
         }
-        // Define he size of the rect is needed to draw the avarange color
-        let dotSize = CGSize(width: 1, height: 1)
+        
         // Define the bitmap context in which the image will be drawn
-        let bytesPerRow = 4
         let bitsPerComponent = 8
-        let rgba = UnsafeMutablePointer<UInt8>.alloc(bytesPerRow)
+        let bytesPerRow = Int(4 * rect.size.width)
+        let pixels = UnsafeMutablePointer<UInt8>.alloc(bytesPerRow * Int(rect.size.height))
         let context = CGBitmapContextCreate(
-            rgba,
-            Int(dotSize.width),
-            Int(dotSize.height),
+            pixels,
+            Int(rect.size.width),
+            Int(rect.size.height),
             bitsPerComponent,
             bytesPerRow,
-            CGColorSpaceCreateDeviceRGB(),
+            CGImageGetColorSpace(image),
             CGImageAlphaInfo.PremultipliedLast.rawValue)
-        // Draw the image
-        CGContextDrawImage(context, CGRect(origin: CGPoint.zero, size: dotSize), image)
-        // Calculate and retuen the color stored in the pointer
+        // Draw the image to be able to get the pixels info
+        CGContextDrawImage(context, rect, image)
+        // Calculate the avarage color
+        var rgb: (r: CGFloat, g: CGFloat, b: CGFloat) = (0, 0, 0)
+        let numberOfPixels = Int(rect.size.width * rect.size.height / 4)
+        for i in (0..<numberOfPixels) {
+            rgb.r += CGFloat(pixels[i * 4 + 0])
+            rgb.g += CGFloat(pixels[i * 4 + 1])
+            rgb.b += CGFloat(pixels[i * 4 + 2])
+        }
+        // Return ...
         return UIColor(
-            red:   CGFloat(rgba[0]) / 255,
-            green: CGFloat(rgba[1]) / 255,
-            blue:  CGFloat(rgba[2]) / 255,
-            alpha: CGFloat(rgba[3]) / 255)
+            red:   rgb.r / CGFloat(numberOfPixels) / 255,
+            green: rgb.g / CGFloat(numberOfPixels) / 255,
+            blue:  rgb.b / CGFloat(numberOfPixels) / 255,
+            alpha: 1)
     }
     
 }
@@ -201,4 +204,32 @@ extension PMImageCollectionView: UICollectionViewDelegateFlowLayout {
         return CGSize.zero
     }
     
+}
+
+// MARK: - UICollectionViewDelegate Extension
+
+extension PMImageCollectionView: UICollectionViewDelegate {
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        guard let tile = tiledImageInfo?.tiles?[indexPath.item] else { return }
+        let avarageColor = getAverageColor(ofImage: tile, inRect: CGRect(origin: CGPoint.zero, size: imageTileSize))
+        server.fetchTileForColor(
+            avarageColor,
+            size: imageTileSize,
+            success: { image in
+                guard let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PMImageCollectionViewCell else { return }
+                UIView.transitionWithView(
+                    cell.imageView,
+                    duration: 0.52,
+                    options: UIViewAnimationOptions.TransitionFlipFromLeft,
+                    animations: {
+                        cell.imageView.image = image
+                    },
+                    completion: nil)
+            },
+            failure: { error in
+                print(error)
+            })
+    }
+
 }
