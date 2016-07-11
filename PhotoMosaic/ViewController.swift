@@ -62,7 +62,10 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
         picker.dismissViewControllerAnimated(true) { [unowned self] in
-            self.performSegueWithIdentifier("PresentTips", sender: image)
+            if let cgimage = image.CGImage {
+                let photo = UIImage(CGImage: cgimage, scale: image.scale, orientation: .Up)
+                self.performSegueWithIdentifier("PresentTips", sender: photo)
+            }
         }
     }
     

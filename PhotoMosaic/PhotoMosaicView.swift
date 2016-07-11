@@ -90,6 +90,20 @@ class PhotoMosaicView: UIView {
             size: collectionViewSize)
     }
     
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
+        if motion == .MotionShake {
+            for i in (0..<collectionView.numberOfItemsInSection(0)) {
+                let indexPath = NSIndexPath(forItem: i, inSection: 0)
+                let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PhotoMosaicViewCell
+                cell?.toggleImage()
+            }
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func customInit() {
@@ -101,6 +115,7 @@ class PhotoMosaicView: UIView {
     }
     
     private func resizePhoto(source: UIImage, to size: CGSize) -> UIImage? {
+        guard let cgimage = source.CGImage else { return nil }
         // Find the right ratio to scale
         let ratio = max(source.size.width / size.width, source.size.height / size.height)
         // Find the photo size after resize and applying the ratio
@@ -112,13 +127,13 @@ class PhotoMosaicView: UIView {
             nil,
             Int(resizedPhotoSize.width),
             Int(resizedPhotoSize.height),
-            CGImageGetBitsPerComponent(source.CGImage),
-            CGImageGetBytesPerRow(source.CGImage),
-            CGImageGetColorSpace(source.CGImage),
-            CGImageGetBitmapInfo(source.CGImage).rawValue)
+            CGImageGetBitsPerComponent(cgimage),
+            CGImageGetBytesPerRow(cgimage),
+            CGImageGetColorSpace(cgimage),
+            CGImageGetBitmapInfo(cgimage).rawValue)
         // Draw the image in the calculated size
         CGContextSetInterpolationQuality(context, CGInterpolationQuality.High)
-        CGContextDrawImage(context, CGRect(origin: CGPointZero, size: resizedPhotoSize), source.CGImage!)
+        CGContextDrawImage(context, CGRect(origin: CGPointZero, size: resizedPhotoSize), cgimage)
         // Create and return the resized image
         return CGBitmapContextCreateImage(context).flatMap { UIImage(CGImage: $0) }
     }
@@ -145,41 +160,6 @@ class PhotoMosaicView: UIView {
         return TiledPhotoInfo(rows, cols, tiles)
     }
     
-    private func getAverageColor(ofPhoto photo: CGImage?, inRect rect: CGRect) -> UIColor {
-        guard let photo = photo else {
-            return UIColor.blackColor().colorWithAlphaComponent(0)
-        }
-        
-        // Define the bitmap context in which the image will be drawn
-        let bitsPerComponent = 8
-        let bytesPerRow = Int(4 * rect.size.width)
-        let pixels = UnsafeMutablePointer<UInt8>.alloc(bytesPerRow * Int(rect.size.height))
-        let context = CGBitmapContextCreate(
-            pixels,
-            Int(rect.size.width),
-            Int(rect.size.height),
-            bitsPerComponent,
-            bytesPerRow,
-            CGImageGetColorSpace(photo),
-            CGImageAlphaInfo.PremultipliedLast.rawValue)
-        // Draw the photo to be able to get the pixels info
-        CGContextDrawImage(context, rect, photo)
-        // Calculate the avarage color
-        var rgb: (r: CGFloat, g: CGFloat, b: CGFloat) = (0, 0, 0)
-        let numberOfPixels = Int(rect.size.width * rect.size.height / 4)
-        for i in (0..<numberOfPixels) {
-            rgb.r += CGFloat(pixels[i * 4 + 0])
-            rgb.g += CGFloat(pixels[i * 4 + 1])
-            rgb.b += CGFloat(pixels[i * 4 + 2])
-        }
-        // Return ...
-        return UIColor(
-            red:   rgb.r / CGFloat(numberOfPixels) / 255,
-            green: rgb.g / CGFloat(numberOfPixels) / 255,
-            blue:  rgb.b / CGFloat(numberOfPixels) / 255,
-            alpha: 1)
-    }
-    
 }
 
 // MARK: - UICollectionViewDataSource Extension 
@@ -192,8 +172,8 @@ extension PhotoMosaicView: UICollectionViewDataSource {
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath)
-        if let image = tiledPhotoInfo?.tiles?[indexPath.item] {
-            (cell as? PhotoMosaicViewCell)?.imageView.image = UIImage(CGImage: image)
+        if let photo = tiledPhotoInfo?.tiles?[indexPath.item] {
+            (cell as? PhotoMosaicViewCell)?.photo = UIImage(CGImage: photo)
         }
         return cell
     }
@@ -218,25 +198,8 @@ extension PhotoMosaicView: UICollectionViewDelegateFlowLayout {
 extension PhotoMosaicView: UICollectionViewDelegate {
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        guard let tile = tiledPhotoInfo?.tiles?[indexPath.item] else { return }
-        let avarageColor = getAverageColor(ofPhoto: tile, inRect: CGRect(origin: CGPoint.zero, size: tileSize))
-        server.fetchTileForColor(
-            avarageColor,
-            size: tileSize,
-            success: { image in
-                guard let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PhotoMosaicViewCell else { return }
-                UIView.transitionWithView(
-                    cell.imageView,
-                    duration: 0.52,
-                    options: UIViewAnimationOptions.TransitionFlipFromLeft,
-                    animations: {
-                        cell.imageView.image = image
-                    },
-                    completion: nil)
-            },
-            failure: { error in
-                print(error)
-            })
+        guard let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PhotoMosaicViewCell else { return }
+        cell.toggleImage()
     }
 
 }

@@ -18,7 +18,9 @@ class TipsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView?.image = photo
+        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+            self.imageView?.image = self.photo
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

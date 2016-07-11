@@ -24,12 +24,16 @@ class PhotoMosaicViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView?.image = photo
+        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+            self.imageView?.image = self.photo
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        
         photoView?.setPhoto(photo)
+        photoView?.becomeFirstResponder() // To receive shake gesture
         // To remove the 'Tips & Tricks' view from the hierarchy ...
         let parent = presentingViewController as? UINavigationController
         if let firstVC = parent?.viewControllers.first {
@@ -40,6 +44,7 @@ class PhotoMosaicViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func dismiss() {
+        photoView?.resignFirstResponder()
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
