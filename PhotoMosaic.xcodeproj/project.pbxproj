@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04244C3E1D32768C00ACCAC9 /* TipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04244C3D1D32768C00ACCAC9 /* TipsViewController.swift */; };
+		04244C401D330A3700ACCAC9 /* PhotoMosaicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04244C3F1D330A3700ACCAC9 /* PhotoMosaicViewController.swift */; };
 		04F4344A1D2BB906009A5394 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F434491D2BB906009A5394 /* AppDelegate.swift */; };
 		04F4344C1D2BB906009A5394 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F4344B1D2BB906009A5394 /* ViewController.swift */; };
 		04F4344F1D2BB906009A5394 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04F4344D1D2BB906009A5394 /* Main.storyboard */; };
@@ -14,10 +16,8 @@
 		04F434541D2BB906009A5394 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04F434521D2BB906009A5394 /* LaunchScreen.storyboard */; };
 		04F4345D1D2BC2E1009A5394 /* TakeHomeTask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04F4345B1D2BB920009A5394 /* TakeHomeTask.framework */; };
 		04F4345E1D2BC2E1009A5394 /* TakeHomeTask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04F4345B1D2BB920009A5394 /* TakeHomeTask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		04F434611D2BC422009A5394 /* h.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04F434601D2BC422009A5394 /* h.jpg */; };
-		04F434631D2BD91E009A5394 /* v.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04F434621D2BD91E009A5394 /* v.jpg */; };
-		04FF07DC1D2D149700802C07 /* PMImageCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF07DB1D2D149700802C07 /* PMImageCollectionView.swift */; };
-		04FF07DE1D2D2B5A00802C07 /* PMImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF07DD1D2D2B5A00802C07 /* PMImageCollectionViewCell.swift */; };
+		04FF07DC1D2D149700802C07 /* PhotoMosaicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF07DB1D2D149700802C07 /* PhotoMosaicView.swift */; };
+		04FF07DE1D2D2B5A00802C07 /* PhotoMosaicViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF07DD1D2D2B5A00802C07 /* PhotoMosaicViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04244C3D1D32768C00ACCAC9 /* TipsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipsViewController.swift; sourceTree = "<group>"; };
+		04244C3F1D330A3700ACCAC9 /* PhotoMosaicViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoMosaicViewController.swift; sourceTree = "<group>"; };
 		04F434461D2BB906009A5394 /* PhotoMosaic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoMosaic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04F434491D2BB906009A5394 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		04F4344B1D2BB906009A5394 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -43,10 +45,8 @@
 		04F434531D2BB906009A5394 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		04F434551D2BB906009A5394 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04F4345B1D2BB920009A5394 /* TakeHomeTask.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TakeHomeTask.framework; sourceTree = "<group>"; };
-		04F434601D2BC422009A5394 /* h.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = h.jpg; sourceTree = "<group>"; };
-		04F434621D2BD91E009A5394 /* v.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = v.jpg; sourceTree = "<group>"; };
-		04FF07DB1D2D149700802C07 /* PMImageCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMImageCollectionView.swift; sourceTree = "<group>"; };
-		04FF07DD1D2D2B5A00802C07 /* PMImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		04FF07DB1D2D149700802C07 /* PhotoMosaicView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoMosaicView.swift; sourceTree = "<group>"; };
+		04FF07DD1D2D2B5A00802C07 /* PhotoMosaicViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoMosaicViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,14 +82,14 @@
 			children = (
 				04F434491D2BB906009A5394 /* AppDelegate.swift */,
 				04F4344B1D2BB906009A5394 /* ViewController.swift */,
-				04FF07DB1D2D149700802C07 /* PMImageCollectionView.swift */,
-				04FF07DD1D2D2B5A00802C07 /* PMImageCollectionViewCell.swift */,
+				04244C3D1D32768C00ACCAC9 /* TipsViewController.swift */,
+				04244C3F1D330A3700ACCAC9 /* PhotoMosaicViewController.swift */,
+				04FF07DB1D2D149700802C07 /* PhotoMosaicView.swift */,
+				04FF07DD1D2D2B5A00802C07 /* PhotoMosaicViewCell.swift */,
 				04F4344D1D2BB906009A5394 /* Main.storyboard */,
 				04F434501D2BB906009A5394 /* Assets.xcassets */,
 				04F434521D2BB906009A5394 /* LaunchScreen.storyboard */,
 				04F434551D2BB906009A5394 /* Info.plist */,
-				04F434601D2BC422009A5394 /* h.jpg */,
-				04F434621D2BD91E009A5394 /* v.jpg */,
 				04F4345B1D2BB920009A5394 /* TakeHomeTask.framework */,
 			);
 			path = PhotoMosaic;
@@ -157,8 +157,6 @@
 				04F434541D2BB906009A5394 /* LaunchScreen.storyboard in Resources */,
 				04F434511D2BB906009A5394 /* Assets.xcassets in Resources */,
 				04F4344F1D2BB906009A5394 /* Main.storyboard in Resources */,
-				04F434631D2BD91E009A5394 /* v.jpg in Resources */,
-				04F434611D2BC422009A5394 /* h.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,8 +167,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04FF07DC1D2D149700802C07 /* PMImageCollectionView.swift in Sources */,
-				04FF07DE1D2D2B5A00802C07 /* PMImageCollectionViewCell.swift in Sources */,
+				04FF07DC1D2D149700802C07 /* PhotoMosaicView.swift in Sources */,
+				04244C3E1D32768C00ACCAC9 /* TipsViewController.swift in Sources */,
+				04FF07DE1D2D2B5A00802C07 /* PhotoMosaicViewCell.swift in Sources */,
+				04244C401D330A3700ACCAC9 /* PhotoMosaicViewController.swift in Sources */,
 				04F4344C1D2BB906009A5394 /* ViewController.swift in Sources */,
 				04F4344A1D2BB906009A5394 /* AppDelegate.swift in Sources */,
 			);

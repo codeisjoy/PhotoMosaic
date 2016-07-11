@@ -1,5 +1,5 @@
 //
-//  PMImageCollectionView.swift
+//  PhotoMosaicView.swift
 //  PhotoMosaic
 //
 //  Created by Emad A. on 6/07/2016.
@@ -9,7 +9,7 @@
 import UIKit
 import TakeHomeTask
 
-struct PMTiledImageInfo {
+struct TiledPhotoInfo {
     
     let rows: Int
     let cols: Int
@@ -23,14 +23,14 @@ struct PMTiledImageInfo {
     
 }
 
-class PMImageCollectionView: UIView {
+class PhotoMosaicView: UIView {
     
-    let imageTileSize = CGSize(width: 32, height: 32)
+    let tileSize = CGSize(width: 32, height: 32)
     
     // MARK: - Private Properties
     
-    private var resizedImage: UIImage?
-    private var tiledImageInfo: PMTiledImageInfo?
+    private var resizedPhoto: UIImage?
+    private var tiledPhotoInfo: TiledPhotoInfo?
     
     private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -50,14 +50,21 @@ class PMImageCollectionView: UIView {
     
     // MARK: - Public Methods
     
-    func setImage(image: UIImage?) {
-        guard let image = image else { return }
+    func setPhoto(photo: UIImage?) {
+        guard let photo = photo else { return }
         
-        resizedImage = resizeImage(image, to: bounds.size)
-        tiledImageInfo = cropImage(resizedImage, tileSize: imageTileSize)
-        
-        collectionView.reloadData()
-        setNeedsLayout()
+        collectionView.alpha = 0
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { [unowned self] in
+            self.resizedPhoto = self.resizePhoto(photo, to: self.bounds.size)
+            self.tiledPhotoInfo = self.tilePhoto(self.resizedPhoto, tileSize: self.tileSize)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.collectionView.reloadData()
+                self.setNeedsLayout()
+                UIView.animateWithDuration(0.25, animations: { 
+                    self.collectionView.alpha = 1
+                })
+            }
+        }
     }
     
     // MARK: - Overriden Methods
@@ -75,48 +82,48 @@ class PMImageCollectionView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let collectionViewSize = resizedImage?.size ?? CGSize.zero
+        let collectionViewSize = resizedPhoto?.size ?? CGSize.zero
         collectionView.frame = CGRect(
             origin: CGPoint(
                 x: (bounds.width - collectionViewSize.width) / 2,
-                y: CGRectGetMinY(bounds)),
+                y: (bounds.height - collectionViewSize.height) / 2),
             size: collectionViewSize)
     }
     
     // MARK: - Private Methods
     
     private func customInit() {
-        collectionView.registerClass(PMImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.registerClass(PhotoMosaicViewCell.self, forCellWithReuseIdentifier: "Cell")
         collectionView.dataSource = self
         collectionView.delegate = self
         
         addSubview(collectionView)
     }
     
-    private func resizeImage(source: UIImage, to size: CGSize) -> UIImage? {
+    private func resizePhoto(source: UIImage, to size: CGSize) -> UIImage? {
         // Find the right ratio to scale
         let ratio = max(source.size.width / size.width, source.size.height / size.height)
-        // Find the image size after resize and applying the ratio
-        let resizedImageSize = CGSize(
+        // Find the photo size after resize and applying the ratio
+        let resizedPhotoSize = CGSize(
             width: floor(source.size.width / ratio),
             height: floor(source.size.height / ratio))
-        // Create the bitmat context in which the resized image will be drawn
+        // Create the bitmat context in which the resized photo will be drawn
         let context = CGBitmapContextCreate(
             nil,
-            Int(resizedImageSize.width),
-            Int(resizedImageSize.height),
+            Int(resizedPhotoSize.width),
+            Int(resizedPhotoSize.height),
             CGImageGetBitsPerComponent(source.CGImage),
             CGImageGetBytesPerRow(source.CGImage),
             CGImageGetColorSpace(source.CGImage),
             CGImageGetBitmapInfo(source.CGImage).rawValue)
         // Draw the image in the calculated size
         CGContextSetInterpolationQuality(context, CGInterpolationQuality.High)
-        CGContextDrawImage(context, CGRect(origin: CGPointZero, size: resizedImageSize), source.CGImage!)
+        CGContextDrawImage(context, CGRect(origin: CGPointZero, size: resizedPhotoSize), source.CGImage!)
         // Create and return the resized image
         return CGBitmapContextCreateImage(context).flatMap { UIImage(CGImage: $0) }
     }
     
-    private func cropImage(source: UIImage?, tileSize size: CGSize) -> PMTiledImageInfo {
+    private func tilePhoto(source: UIImage?, tileSize size: CGSize) -> TiledPhotoInfo {
         // Calculate the number of columns and rows the image could be sliced to
         let rows = Int(ceil((source?.size.height ?? 0) / size.height))
         let cols = Int(ceil((source?.size.width  ?? 0) / size.width ))
@@ -130,16 +137,16 @@ class PMImageCollectionView: UIView {
                         x: CGFloat(c) * size.width,
                         y: CGFloat(r) * size.height),
                     size: size)
-                let image = CGImageCreateWithImageInRect(source?.CGImage, rect)
-                tiles.append(image)
+                let photo = CGImageCreateWithImageInRect(source?.CGImage, rect)
+                tiles.append(photo)
             }
         }
-        // Create the tiles image info and return
-        return PMTiledImageInfo(rows, cols, tiles)
+        // Create the tiles photo info and return
+        return TiledPhotoInfo(rows, cols, tiles)
     }
     
-    private func getAverageColor(ofImage image: CGImage?, inRect rect: CGRect) -> UIColor {
-        guard let image = image else {
+    private func getAverageColor(ofPhoto photo: CGImage?, inRect rect: CGRect) -> UIColor {
+        guard let photo = photo else {
             return UIColor.blackColor().colorWithAlphaComponent(0)
         }
         
@@ -153,10 +160,10 @@ class PMImageCollectionView: UIView {
             Int(rect.size.height),
             bitsPerComponent,
             bytesPerRow,
-            CGImageGetColorSpace(image),
+            CGImageGetColorSpace(photo),
             CGImageAlphaInfo.PremultipliedLast.rawValue)
-        // Draw the image to be able to get the pixels info
-        CGContextDrawImage(context, rect, image)
+        // Draw the photo to be able to get the pixels info
+        CGContextDrawImage(context, rect, photo)
         // Calculate the avarage color
         var rgb: (r: CGFloat, g: CGFloat, b: CGFloat) = (0, 0, 0)
         let numberOfPixels = Int(rect.size.width * rect.size.height / 4)
@@ -177,16 +184,16 @@ class PMImageCollectionView: UIView {
 
 // MARK: - UICollectionViewDataSource Extension 
 
-extension PMImageCollectionView: UICollectionViewDataSource {
+extension PhotoMosaicView: UICollectionViewDataSource {
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tiledImageInfo?.tiles?.count ?? 0
+        return tiledPhotoInfo?.tiles?.count ?? 0
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath)
-        if let image = tiledImageInfo?.tiles?[indexPath.item] {
-            (cell as? PMImageCollectionViewCell)?.imageView.image = UIImage(CGImage: image)
+        if let image = tiledPhotoInfo?.tiles?[indexPath.item] {
+            (cell as? PhotoMosaicViewCell)?.imageView.image = UIImage(CGImage: image)
         }
         return cell
     }
@@ -195,10 +202,10 @@ extension PMImageCollectionView: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout Extension
 
-extension PMImageCollectionView: UICollectionViewDelegateFlowLayout {
+extension PhotoMosaicView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        if let image = tiledImageInfo?.tiles?[indexPath.item] {
+        if let image = tiledPhotoInfo?.tiles?[indexPath.item] {
             return UIImage(CGImage: image).size
         }
         return CGSize.zero
@@ -208,16 +215,16 @@ extension PMImageCollectionView: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UICollectionViewDelegate Extension
 
-extension PMImageCollectionView: UICollectionViewDelegate {
+extension PhotoMosaicView: UICollectionViewDelegate {
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        guard let tile = tiledImageInfo?.tiles?[indexPath.item] else { return }
-        let avarageColor = getAverageColor(ofImage: tile, inRect: CGRect(origin: CGPoint.zero, size: imageTileSize))
+        guard let tile = tiledPhotoInfo?.tiles?[indexPath.item] else { return }
+        let avarageColor = getAverageColor(ofPhoto: tile, inRect: CGRect(origin: CGPoint.zero, size: tileSize))
         server.fetchTileForColor(
             avarageColor,
-            size: imageTileSize,
+            size: tileSize,
             success: { image in
-                guard let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PMImageCollectionViewCell else { return }
+                guard let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PhotoMosaicViewCell else { return }
                 UIView.transitionWithView(
                     cell.imageView,
                     duration: 0.52,

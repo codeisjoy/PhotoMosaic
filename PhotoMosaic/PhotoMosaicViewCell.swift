@@ -1,5 +1,5 @@
 //
-//  PMImageCollectionViewCell.swift
+//  PhotoMosaicViewCell.swift
 //  PhotoMosaic
 //
 //  Created by Emad A. on 6/07/2016.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PMImageCollectionViewCell: UICollectionViewCell {
+class PhotoMosaicViewCell: UICollectionViewCell {
     
     var imageView: UIImageView = {
         let view = UIImageView()
